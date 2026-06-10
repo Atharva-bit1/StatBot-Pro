@@ -1,5 +1,5 @@
 import type { SVGProps } from "react";
-
+import Image from "next/image";
 type IconProps = SVGProps<SVGSVGElement>;
 
 function BaseIcon({ children, ...props }: IconProps) {
@@ -19,20 +19,14 @@ function BaseIcon({ children, ...props }: IconProps) {
   );
 }
 
-export function CpuChipIcon(props: IconProps) {
+export function CpuChipIcon() {
   return (
-    <BaseIcon {...props}>
-      <rect x="7" y="7" width="10" height="10" rx="2" />
-      <path d="M9.5 9.5h5v5h-5z" />
-      <path d="M9 2v3" />
-      <path d="M15 2v3" />
-      <path d="M9 19v3" />
-      <path d="M15 19v3" />
-      <path d="M2 9h3" />
-      <path d="M2 15h3" />
-      <path d="M19 9h3" />
-      <path d="M19 15h3" />
-    </BaseIcon>
+    <Image
+      src="/OIP-removebg-preview.png"
+      alt="StatBot Logo"
+      width={40}
+      height={40}
+    />
   );
 }
 

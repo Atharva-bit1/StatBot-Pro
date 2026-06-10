@@ -143,7 +143,7 @@ export default function FileDropzone({
           setIsDragging(false);
         }}
         onDrop={(event) => void handleDrop(event)}
-        className={`panel-soft animate-slide-up rounded-[2rem] border-2 border-dashed p-6 transition duration-200 ${zoneClasses} ${
+        className={`panel-soft animate-slide-up rounded-[2rem] border-2 border-dashed p-6 min-h-[450px] transition duration-200 ${zoneClasses} ${
           disabled || isParsing
             ? "cursor-not-allowed opacity-75"
             : "cursor-pointer hover:border-[var(--cyan)]"
@@ -159,32 +159,29 @@ export default function FileDropzone({
           disabled={disabled || isParsing}
         />
 
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--bg-overlay)] text-[var(--cyan)]">
+        <div className="flex h-full flex-col items-center justify-center text-center gap-6">
+          <div className="flex flex-col items-center text-center gap-6">
+            <div className="flex h-24 w-24 items-center justify-center rounded-3xl border border-[var(--border)] bg-[var(--bg-overlay)] text-[var(--cyan)]">
               {isParsing ? (
                 <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--border-bright)] border-t-[var(--cyan)]" />
               ) : (
-                <UploadIcon className="h-6 w-6" />
+                <UploadIcon className="h-10 w-10" />
               )}
             </div>
 
-            <div className="space-y-2">
-              <div className="flex flex-wrap items-center gap-2">
+            <div className="space-y-4 text-center">
+              <div className="space-y-3">
                 <h2 className="font-display text-xl tracking-tight text-[var(--text-primary)]">
                   {file
                     ? "Replace or inspect your dataset"
-                    : "Drop in a CSV to get started"}
+                    : "Drag & Drop Your CSV Here"}
                 </h2>
-                <span className="rounded-full border border-[var(--border)] bg-[var(--bg-overlay)] px-2.5 py-1 text-[11px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                  Single file upload
-                </span>
               </div>
 
-              <p className="max-w-2xl text-sm leading-7 text-[var(--text-secondary)]">
+              <p className="max-w-2xl text-sm leading-10 text-[var(--text-secondary)]">
                 {isParsing
                   ? "Reading file structure and asking the preview endpoint for dataset metadata."
-                  : "The current backend preview route returns rows, columns, and column names. Uploading a new file resets the conversation so the context stays accurate."}
+                  : "Upload a well-formatted CSV file with column names in the first row. StatBot Pro can analyze datasets such as sales data, customer information, performance metrics, financial records, and survey responses."}
               </p>
             </div>
           </div>
@@ -196,10 +193,15 @@ export default function FileDropzone({
               openPicker();
             }}
             disabled={disabled || isParsing}
-            className="rounded-full border border-[var(--border-bright)] bg-[var(--cyan-dim)] px-4 py-2 text-sm text-[var(--cyan-soft)] transition hover:bg-[rgba(97,231,255,0.22)] disabled:cursor-not-allowed disabled:opacity-70"
+            className="rounded-full border border-[var(--border-bright)] bg-[var(--cyan-dim)] px-20 py-4 text-sm text-[var(--cyan-soft)] transition hover:bg-[rgba(97,231,255,0.22)] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {file ? "Choose another CSV" : "Browse files"}
           </button>
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm text-center text-[var(--text-secondary)]">
+            Supports .csv files up to 50 MB
+          </p>
         </div>
       </div>
 
