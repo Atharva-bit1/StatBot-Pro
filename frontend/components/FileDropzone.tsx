@@ -43,6 +43,7 @@ export default function FileDropzone({
   const [isParsing, setIsParsing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [progress, setProgress] = useState(0);
 
   const openPicker = () => {
     if (disabled || isParsing) {
@@ -58,17 +59,28 @@ export default function FileDropzone({
     }
 
     if (!selectedFile.name.toLowerCase().endsWith(".csv")) {
-      setError("Please choose a CSV file. The current backend preview endpoint expects CSV input.");
+      setError(
+        "Please choose a CSV file. The current backend preview endpoint expects CSV input.",
+      );
       return;
     }
 
     setError(null);
     setIsParsing(true);
-
+    setProgress(20);
+    const timer = setInterval(() => {
+      setProgress((current) => Math.min(current + 15, 90));
+    }, 200);
     try {
       const preview = await onPreview(selectedFile);
+
+      clearInterval(timer);
+      setProgress(100);
+
       onFileAccepted(selectedFile, preview);
     } catch (previewError: unknown) {
+      clearInterval(timer);
+
       const message =
         previewError instanceof Error
           ? previewError.message
@@ -76,6 +88,7 @@ export default function FileDropzone({
       setError(message);
     } finally {
       setIsParsing(false);
+      setTimeout(() => setProgress(0), 1500);
 
       if (inputRef.current) {
         inputRef.current.value = "";
@@ -131,7 +144,9 @@ export default function FileDropzone({
         }}
         onDrop={(event) => void handleDrop(event)}
         className={`panel-soft animate-slide-up rounded-[2rem] border-2 border-dashed p-6 transition duration-200 ${zoneClasses} ${
-          disabled || isParsing ? "cursor-not-allowed opacity-75" : "cursor-pointer hover:border-[var(--cyan)]"
+          disabled || isParsing
+            ? "cursor-not-allowed opacity-75"
+            : "cursor-pointer hover:border-[var(--cyan)]"
         }`}
         aria-disabled={disabled || isParsing}
       >
@@ -157,7 +172,9 @@ export default function FileDropzone({
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="font-display text-xl tracking-tight text-[var(--text-primary)]">
-                  {file ? "Replace or inspect your dataset" : "Drop in a CSV to get started"}
+                  {file
+                    ? "Replace or inspect your dataset"
+                    : "Drop in a CSV to get started"}
                 </h2>
                 <span className="rounded-full border border-[var(--border)] bg-[var(--bg-overlay)] px-2.5 py-1 text-[11px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
                   Single file upload
@@ -206,8 +223,8 @@ export default function FileDropzone({
                 </div>
 
                 <p className="mt-1 text-xs text-[var(--text-secondary)]">
-                  {formatBytes(file.size)} · {datasetInfo.rows.toLocaleString()} rows ·{" "}
-                  {datasetInfo.columns} columns
+                  {formatBytes(file.size)} · {datasetInfo.rows.toLocaleString()}{" "}
+                  rows · {datasetInfo.columns} columns
                 </p>
               </div>
             </div>
@@ -226,7 +243,19 @@ export default function FileDropzone({
           </div>
         </div>
       ) : null}
-
+      {progress > 0 && (
+        <div className="overflow-hidden rounded-full border border-[var(--border)]">
+          <div
+            className="h-2 bg-[var(--cyan)] transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      )}
+      {progress > 0 && (
+        <p className="text-xs text-[var(--text-secondary)]">
+          Uploading... {progress}%
+        </p>
+      )}
       {error ? (
         <div className="flex items-start gap-2 rounded-2xl border border-[rgba(255,122,136,0.24)] bg-[rgba(255,122,136,0.08)] px-4 py-3 text-sm text-[var(--rose)]">
           <WarningIcon className="mt-0.5 h-4 w-4 shrink-0" />
